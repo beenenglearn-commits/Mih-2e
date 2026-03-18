@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💰 المحفظة الذكية Pro v2.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--p:#6366f1;--ok:#10b981;--no:#ef4444;--warn:#f59e0b;--dark:#0f172a;--light:#f8fafc}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Tajawal',sans-serif;background:linear-gradient(to bottom,#f8fafc,#e2e8f0);color:var(--dark);padding-bottom:100px}
+.header{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:30px 20px 40px;border-radius:0 0 40px 40px;box-shadow:0 10px 25px rgba(0,0,0,.2);position:relative;overflow:hidden}
+.header-bg{position:absolute;top:0;left:0;right:0;bottom:0;opacity:.1;background:radial-gradient(circle at 20% 50%,white 0%,transparent 50%);animation:pulse 8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.1}50%{opacity:.2}}
+.logo{display:flex;align-items:center;gap:15px;margin-bottom:25px;position:relative;z-index:1}
+.logo-icon{width:55px;height:55px;background:rgba(255,255,255,.25);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;border:2px solid rgba(255,255,255,.3)}
+.logo h1{font-size:1.8rem;font-weight:800;text-shadow:2px 2px 4px rgba(0,0,0,.2)}
+.logo p{font-size:.85rem;font-weight:300;opacity:.9}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;position:relative;z-index:1}
+.stat{background:rgba(255,255,255,.15);backdrop-filter:blur(20px);padding:18px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.25);text-align:center;transition:all .3s}
+.stat:hover{transform:translateY(-3px)}
+.stat small{font-size:.75rem;display:block;margin-bottom:6px;opacity:.85}
+.stat h3{font-size:1.5rem;font-weight:800}
+.stat.hl{background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.4)}
+.container{max-width:700px;margin:-20px auto 0;padding:0 20px}
+.page{display:none;animation:fadeIn .4s}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.card{background:#fff;border-radius:24px;padding:24px;margin-bottom:20px;box-shadow:0 4px 6px rgba(0,0,0,.1);border:1px solid rgba(0,0,0,.05)}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--light)}
+.card-title{display:flex;align-items:center;gap:12px;font-size:1.25rem;font-weight:700}
+.form-group{margin-bottom:20px}
+.form-label{display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;margin-bottom:10px}
+input,select{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:14px;font-size:1rem;font-family:inherit;transition:all .3s;outline:none}
+input:focus,select:focus{border-color:var(--p);box-shadow:0 0 0 4px rgba(99,102,241,.1)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 24px;border:none;border-radius:14px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 4px 6px rgba(0,0,0,.1);color:#fff}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:linear-gradient(135deg,#667eea,#764ba2)}
+.btn-success{background:linear-gradient(135deg,#10b981,#059669)}
+.btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.btn-info{background:linear-gradient(135deg,#06b6d4,#0891b2)}
+.btn-light{background:var(--light);color:var(--dark);border:2px solid #e2e8f0}
+.btn-sm{padding:10px 16px;font-size:.875rem}
+.btn-block{width:100%}
+.op-row{background:linear-gradient(135deg,#f8fafc,#f1f5f9);border:2px solid #e2e8f0;border-radius:18px;padding:20px;margin-bottom:16px;position:relative}
+.op-row::before{content:'';position:absolute;right:0;top:0;bottom:0;width:5px;border-radius:0 18px 18px 0;background:var(--p)}
+.op-row.expense::before{background:var(--no)}
+.op-row.debt::before{background:var(--warn)}
+.nav{position:fixed;bottom:20px;left:20px;right:20px;background:var(--dark);border-radius:28px;padding:12px;display:flex;justify-content:space-around;box-shadow:0 10px 40px rgba(0,0,0,.4);z-index:1000}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;color:rgba(255,255,255,.6);cursor:pointer;border-radius:18px;transition:all .3s}
+.nav-item.active{color:#fff;background:rgba(99,102,241,.2)}
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.8);z-index:2000;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.modal-content{background:#fff;border-radius:28px;padding:32px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .3s}
+@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid var(--light)}
+.modal-close{width:40px;height:40px;border-radius:50%;background:var(--light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.loading{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff}
+.loader{width:60px;height:60px;border:5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:60px 20px;color:#64748b}
+.empty i{font-size:5rem;margin-bottom:20px;opacity:.3}
+.badge{display:inline-flex;padding:5px 12px;border-radius:20px;font-size:.75rem;font-weight:600}
+.badge-ok{background:rgba(16,185,129,.15);color:#059669}
+.badge-no{background:rgba(239,68,68,.15);color:#dc2626}
+.badge-warn{background:rgba(245,158,11,.15);color:#d97706}
+.preview img{max-width:200px;height:140px;object-fit:cover;border-radius:12px;border:2px solid #e2e8f0;cursor:pointer;margin-top:10px}
+.income-display{background:linear-gradient(135deg,#10b981,#059669);color:#fff;padding:20px;border-radius:18px;margin-bottom:20px;text-align:center}
+.income-display h2{font-size:2.5rem;font-weight:900;margin-top:10px}
+.income-display button{background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.4);margin-top:15px}
+</style>
+</head>
+<body>
+
+<div class="header">
+<div class="header-bg"></div>
+<div class="logo">
+<div class="logo-icon">💰</div>
+<div>
+<h1>المحفظة الذكية</h1>
+<p id="date"></p>
+</div>
+</div>
+<div class="stats">
+<div class="stat"><small>الدخل</small><h3 id="s-in">0</h3></div>
+<div class="stat"><small>المصاريف</small><h3 id="s-out">0</h3></div>
+<div class="stat hl"><small>الصافي</small><h3 id="s-net">0</h3></div>
+</div>
+</div>
+
+<div class="container">
+
+<div id="p-add" class="page active">
+
+<div id="income-section">
+<div class="income-display" id="income-display" style="display:none">
+<small>الدخل اليومي</small>
+<h2 id="income-value">0</h2>
+<button class="btn btn-sm" onclick="editIncome()"><i class="fas fa-edit"></i> تعديل</button>
+</div>
+
+<div class="card" id="income-input">
+<div class="card-header"><h3 class="card-title"><i class="fas fa-money-bill-wave"></i>الدخل اليومي</h3></div>
+<div class="form-group">
+<input type="number" id="income" placeholder="0.00" step="0.01" min="0">
+</div>
+<button class="btn btn-success btn-block" onclick="saveIncome()">
+<i class="fas fa-check"></i> حفظ الدخل
+</button>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h3 class="card-title"><i class="fas fa-list"></i>العمليات اليومية</h3>
+<button class="btn btn-primary btn-sm" onclick="addOp()"><i class="fas fa-plus"></i>إضافة</button>
+</div>
+<div id="ops"></div>
+</div>
+
+<button class="btn btn-success btn-block" onclick="save()">
+<i class="fas fa-cloud-upload"></i>حفظ العمليات ومزامنة
+</button>
+</div>
+
+<div id="p-reports" class="page">
+<div class="card">
+<div class="card-header"><h3 class="card-title"><i class="fas fa-chart-line"></i>التقارير</h3></div>
+<div class="form-group">
+<select id="period" onchange="loadReports()">
+<option value="1">اليوم</option>
+<option value="7">أسبوع</option>
+<option value="30" selected>شهر</option>
+<option value="90">3 أشهر</option>
+<option value="365">سنة</option>
+</select>
+</div>
+<button class="btn btn-info btn-block btn-sm" onclick="loadReports()"><i class="fas fa-sync"></i>تحديث</button>
+</div>
+<div id="reports"></div>
+</div>
+
+<div id="p-ops" class="page">
+<div class="card">
+<div class="card-header"><h3 class="card-title"><i class="fas fa-history"></i>العمليات</h3><span id="ops-count" class="badge badge-ok">0</span></div>
+<div class="form-group">
+<input type="text" id="search" placeholder="بحث..." oninput="filter()">
+</div>
+<div class="form-group">
+<select id="ftype" onchange="filter()">
+<option value="">الكل</option>
+<option value="مصروف">مصروف</option>
+<option value="دين">دين</option>
+</select>
+</div>
+</div>
+<div id="all-ops"></div>
+</div>
+
+<div id="p-debts" class="page">
+<div class="card">
+<div class="card-header"><h3 class="card-title"><i class="fas fa-credit-card"></i>الديون</h3></div>
+<div class="stats" style="grid-template-columns:1fr 1fr">
+<div class="stat"><small>الإجمالي</small><h3 id="d-total">0</h3></div>
+<div class="stat"><small>المتبقي</small><h3 id="d-remain">0</h3></div>
+</div>
+</div>
+<div id="debts"></div>
+</div>
+
+</div>
+
+<div class="nav">
+<div class="nav-item active" onclick="go('p-add',this)"><i class="fas fa-plus" style="font-size:1.5rem"></i><span style="font-size:.7rem;font-weight:600">إضافة</span></div>
+<div class="nav-item" onclick="go('p-reports',this)"><i class="fas fa-chart-pie" style="font-size:1.5rem"></i><span style="font-size:.7rem;font-weight:600">تقارير</span></div>
+<div class="nav-item" onclick="go('p-ops',this)"><i class="fas fa-list" style="font-size:1.5rem"></i><span style="font-size:.7rem;font-weight:600">العمليات</span></div>
+<div class="nav-item" onclick="go('p-debts',this)"><i class="fas fa-wallet" style="font-size:1.5rem"></i><span style="font-size:.7rem;font-weight:600">ديون</span></div>
+</div>
+
+<div id="edit-modal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3>تعديل عملية</h3>
+<button class="modal-close" onclick="closeM('edit-modal')"><i class="fas fa-times"></i></button>
+</div>
+<input type="hidden" id="e-id">
+<input type="hidden" id="e-date">
+<div class="form-group"><label class="form-label">المبلغ</label><input type="number" id="e-amt" step="0.01"></div>
+<div class="form-group"><label class="form-label">الوصف</label><input id="e-desc"></div>
+<div class="form-group">
+<label class="form-label">النوع</label>
+<select id="e-type"><option value="مصروف">مصروف</option><option value="دين">دين</option></select>
+</div>
+<div class="form-group">
+<label class="form-label">الفئة</label>
+<select id="e-cat">
+<option value="طعام">🍔 طعام</option><option value="مواصلات">🚗 مواصلات</option>
+<option value="فواتير">📄 فواتير</option><option value="تسوق">🛒 تسوق</option>
+<option value="ترفيه">🎮 ترفيه</option><option value="صحة">💊 صحة</option>
+<option value="تعليم">📚 تعليم</option><option value="أخرى">📌 أخرى</option>
+</select>
+</div>
+<button class="btn btn-success btn-block" onclick="saveEdit()"><i class="fas fa-check"></i>حفظ</button>
+</div>
+</div>
+
+<div id="pay-modal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3>سداد دين</h3>
+<button class="modal-close" onclick="closeM('pay-modal')"><i class="fas fa-times"></i></button>
+</div>
+<input type="hidden" id="p-id">
+<div class="form-group"><label class="form-label">المبلغ المدفوع</label><input type="number" id="p-amt" step="0.01" min="0"></div>
+<button class="btn btn-success btn-block" onclick="payDebt()"><i class="fas fa-money-bill"></i>تأكيد</button>
+</div>
+</div>
+
+<script>
+const URL="https://script.google.com/macros/s/AKfycbxAIrk3NhpJOVCfM0fTxRWRjcR5UN_SCazwhhk404AxuvoMJqFe6rczkk4vM0KBSh3HTg/exec";
+let data={daily:[],operations:[],debts:[],stats:{}};
+let c=0;
+let todayIncome=0;
+let hasIncome=false;
+
+window.onload=()=>{
+updateDate();
+load();
+setInterval(updateDate,60000);
+};
+
+function updateDate(){
+const d=new Date();
+document.getElementById('date').textContent=d.toLocaleDateString('ar',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+async function load(){
+showL('جاري التحميل...');
+try{
+const r=await fetch(URL);
+const j=await r.json();
+console.log('Response:', j);
+if(j.success){
+data=j.data;
+updateStats();
+checkTodayIncome();
+}
+}catch(e){
+console.error('Load error:',e);
+alert('خطأ في التحميل: '+e.message);
+}
+hideL();
+}
+
+function updateStats(){
+const s=data.stats||{};
+document.getElementById('s-in').textContent=fmt(s.totalIncome||0);
+document.getElementById('s-out').textContent=fmt((s.totalExpenses||0)+(s.totalDebts||0));
+const net=document.getElementById('s-net');
+net.textContent=fmt(s.totalNet||0);
+net.style.color=s.totalNet>=0?'#10b981':'#ef4444';
+}
+
+function checkTodayIncome(){
+const today=new Date().toISOString().split('T')[0];
+hasIncome=false;
+todayIncome=0;
+
+if(data.daily && data.daily.length>1){
+for(let i=1;i<data.daily.length;i++){
+if(data.daily[i][0]==today){
+todayIncome=parseFloat(data.daily[i][1])||0;
+hasIncome=true;
+break;
+}
+}
+}
+
+if(hasIncome){
+document.getElementById('income-display').style.display='block';
+document.getElementById('income-input').style.display='none';
+document.getElementById('income-value').textContent=fmt(todayIncome);
+}else{
+document.getElementById('income-display').style.display='none';
+document.getElementById('income-input').style.display='block';
+}
+}
+
+function editIncome(){
+document.getElementById('income').value=todayIncome;
+document.getElementById('income-display').style.display='none';
+document.getElementById('income-input').style.display='block';
+}
+
+async function saveIncome(){
+const income=parseFloat(document.getElementById('income').value)||0;
+if(income<=0){
+alert('أدخل مبلغ الدخل');
+return;
+}
+
+const today=new Date().toISOString().split('T')[0];
+
+showL('جاري الحفظ...');
+try{
+await fetch(URL,{
+method:'POST',
+mode:'no-cors',
+body:JSON.stringify({
+action:'updateIncome',
+date:today,
+income:income
+})
+});
+
+hideL();
+alert('✅ تم حفظ الدخل!');
+setTimeout(()=>load(),1000);
+}catch(e){
+hideL();
+alert('خطأ: '+e.message);
+}
+}
+
+function go(id,el){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+el.classList.add('active');
+if(id==='p-reports')loadReports();
+if(id==='p-ops')loadAllOps();
+if(id==='p-debts')loadDebts();
+}
+
+function addOp(){
+c++;
+const id='op-'+Date.now()+'-'+c;
+const div=document.createElement('div');
+div.className='op-row';
+div.id=id;
+div.innerHTML=`
+<div class="form-group"><label class="form-label">المبلغ</label><input type="number" class="amt" placeholder="0.00" step="0.01" min="0"></div>
+<div class="form-group"><label class="form-label">الوصف</label><input class="desc" placeholder="وصف العملية..."></div>
+<div class="form-group">
+<label class="form-label">النوع</label>
+<select class="type" onchange="updateStyle('${id}',this.value)">
+<option value="مصروف">💸 مصروف</option><option value="دين">🧾 دين</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">الفئة</label>
+<select class="cat">
+<option value="طعام">🍔 طعام</option><option value="مواصلات">🚗 مواصلات</option>
+<option value="فواتير">📄 فواتير</option><option value="تسوق">🛒 تسوق</option>
+<option value="ترفيه">🎮 ترفيه</option><option value="صحة">💊 صحة</option>
+<option value="تعليم">📚 تعليم</option><option value="أخرى">📌 أخرى</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">صورة</label>
+<input type="file" class="img" accept="image/*" onchange="preview(this,'${id}')">
+<div id="prev-${id}" class="preview" style="display:none">
+<img onclick="window.open(this.src,'_blank')">
+</div>
+</div>
+<button class="btn btn-danger btn-sm" onclick="delOp('${id}')"><i class="fas fa-trash"></i>حذف</button>
+`;
+document.getElementById('ops').appendChild(div);
+}
+
+function updateStyle(id,type){
+const el=document.getElementById(id);
+el.classList.remove('expense','debt');
+if(type==='مصروف')el.classList.add('expense');
+if(type==='دين')el.classList.add('debt');
+}
+
+function delOp(id){
+if(confirm('حذف؟'))document.getElementById(id).remove();
+}
+
+function preview(input,id){
+if(input.files&&input.files[0]){
+const r=new FileReader();
+r.onload=e=>{
+const p=document.getElementById('prev-'+id);
+p.querySelector('img').src=e.target.result;
+p.style.display='block';
+};
+r.readAsDataURL(input.files[0]);
+}
+}
+
+async function save(){
+if(!hasIncome){
+alert('احفظ الدخل اليومي أولاً!');
+return;
+}
+
+const rows=document.querySelectorAll('#ops .op-row');
+if(rows.length===0){
+alert('أضف عملية واحدة على الأقل');
+return;
+}
+
+const ops=[];
+for(let r of rows){
+const amt=parseFloat(r.querySelector('.amt').value)||0;
+const desc=r.querySelector('.desc').value.trim();
+const type=r.querySelector('.type').value;
+const cat=r.querySelector('.cat').value;
+const imgInput=r.querySelector('.img');
+
+if(amt<=0||!desc){
+alert('املأ جميع الحقول');
+return;
+}
+
+let img='';
+if(imgInput.files&&imgInput.files[0]){
+img=await toBase64(imgInput.files[0]);
+}
+
+ops.push({id:r.id,amount:amt,description:desc,type:type,category:cat,image:img});
+}
+
+const date=new Date().toISOString().split('T')[0];
+
+showL('جاري الحفظ...');
+try{
+await fetch(URL,{
+method:'POST',
+mode:'no-cors',
+body:JSON.stringify({
+action:'saveDay',
+date:date,
+operations:ops
+})
+});
+
+hideL();
+alert('✅ تم الحفظ بنجاح!');
+document.getElementById('ops').innerHTML='';
+c=0;
+setTimeout(()=>load(),1000);
+}catch(e){
+hideL();
+alert('خطأ: '+e.message);
+}
+}
+
+function toBase64(file){
+return new Promise((res,rej)=>{
+const r=new FileReader();
+r.onload=()=>res(r.result);
+r.onerror=rej;
+r.readAsDataURL(file);
+});
+}
+
+function loadReports(){
+const period=parseInt(document.getElementById('period').value);
+const cont=document.getElementById('reports');
+
+if(!data.daily||data.daily.length<=1){
+cont.innerHTML='<div class="empty"><i class="fas fa-chart-line"></i><h3>لا توجد تقارير</h3></div>';
+return;
+}
+
+const now=new Date();
+let html='';
+let pIn=0,pOut=0,pDebt=0;
+
+for(let i=data.daily.length-1;i>=1;i--){
+const row=data.daily[i];
+const date=row[0];
+const inc=parseFloat(row[1])||0;
+const exp=parseFloat(row[2])||0;
+const debt=parseFloat(row[3])||0;
+const net=parseFloat(row[4])||0;
+
+const rd=new Date(date);
+const diff=Math.floor((now-rd)/(1000*60*60*24));
+
+if(diff<=period){
+pIn+=inc;pOut+=exp;pDebt+=debt;
+
+const ops=data.operations.filter(op=>op[1]==date);
+
+html+=`
+<div class="card">
+<div style="display:flex;justify-content:space-between;margin-bottom:15px">
+<span style="font-weight:700;color:var(--p)"><i class="fas fa-calendar"></i> ${date}</span>
+<span style="font-size:1.5rem;font-weight:900;color:${net>=0?'var(--ok)':'var(--no)'}">${fmt(net)}</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:15px">
+<div style="text-align:center;padding:10px;background:var(--light);border-radius:10px">
+<small style="font-size:.7rem;color:#64748b">الدخل</small>
+<strong style="font-size:1.1rem;color:var(--ok)">${fmt(inc)}</strong>
+</div>
+<div style="text-align:center;padding:10px;background:var(--light);border-radius:10px">
+<small style="font-size:.7rem;color:#64748b">المصاريف</small>
+<strong style="font-size:1.1rem;color:var(--no)">${fmt(exp)}</strong>
+</div>
+<div style="text-align:center;padding:10px;background:var(--light);border-radius:10px">
+<small style="font-size:.7rem;color:#64748b">الديون</small>
+<strong style="font-size:1.1rem;color:var(--warn)">${fmt(debt)}</strong>
+</div>
+</div>
+${ops.length>1?`
+<button class="btn btn-light btn-sm btn-block" onclick="toggle('ops-${i}')"><i class="fas fa-eye"></i> عرض العمليات (${ops.length-1})</button>
+<div id="ops-${i}" style="display:none;margin-top:15px;padding-top:15px;border-top:2px dashed #e2e8f0">
+${ops.slice(1).map(o=>`
+<div style="display:flex;justify-content:space-between;padding:10px;background:var(--light);border-radius:10px;margin-bottom:8px">
+<div>
+<div style="font-weight:600">${o[3]}</div>
+<span class="badge badge-${o[4]==='مصروف'?'no':'warn'}">${o[4]}</span>
+<span class="badge badge-ok">${o[5]}</span>
+</div>
+<strong style="font-size:1.2rem;color:${o[4]==='مصروف'?'var(--no)':'var(--warn)'}">${fmt(o[2])}</strong>
+</div>
+`).join('')}
+<button class="btn btn-danger btn-sm btn-block" onclick="delDay('${date}')"><i class="fas fa-trash"></i>حذف اليوم</button>
+</div>
+`:''}
+</div>
+`;
+}
+}
+
+const pNet=pIn-(pOut+pDebt);
+html=`
+<div class="card" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">
+<h3 style="margin-bottom:15px"><i class="fas fa-chart-pie"></i> ملخص الفترة</h3>
+<div class="stats">
+<div class="stat"><small>الدخل</small><h3>${fmt(pIn)}</h3></div>
+<div class="stat"><small>المصاريف</small><h3>${fmt(pOut+pDebt)}</h3></div>
+<div class="stat hl"><small>الصافي</small><h3>${fmt(pNet)}</h3></div>
+</div>
+</div>
+`+html;
+
+cont.innerHTML=html||'<div class="empty"><i class="fas fa-calendar-times"></i><h3>لا بيانات</h3></div>';
+}
+
+function toggle(id){
+const el=document.getElementById(id);
+el.style.display=el.style.display==='none'?'block':'none';
+}
+
+async function delDay(date){
+if(!confirm('حذف اليوم؟'))return;
+showL('جاري الحذف...');
+try{
+await fetch(URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'deleteDay',date:date})});
+hideL();
+alert('تم الحذف');
+setTimeout(()=>{load();loadReports();},1000);
+}catch(e){
+hideL();
+alert('خطأ');
+}
+}
+
+function loadAllOps(){
+const cont=document.getElementById('all-ops');
+if(!data.operations||data.operations.length<=1){
+cont.innerHTML='<div class="empty"><i class="fas fa-inbox"></i><h3>لا عمليات</h3></div>';
+document.getElementById('ops-count').textContent='0';
+return;
+}
+document.getElementById('ops-count').textContent=data.operations.length-1;
+filter();
+}
+
+function filter(){
+const search=document.getElementById('search').value.toLowerCase();
+const ftype=document.getElementById('ftype').value;
+const cont=document.getElementById('all-ops');
+
+if(!data.operations||data.operations.length<=1){
+cont.innerHTML='<div class="empty"><i class="fas fa-inbox"></i><h3>لا عمليات</h3></div>';
+return;
+}
+
+let html='';
+for(let i=data.operations.length-1;i>=1;i--){
+const op=data.operations[i];
+const id=op[0],date=op[1],amt=op[2],desc=op[3],type=op[4],cat=op[5],img=op[6];
+
+if(ftype&&type!==ftype)continue;
+if(search&&!desc.toLowerCase().includes(search))continue;
+
+html+=`
+<div class="card op-row ${type==='مصروف'?'expense':'debt'}">
+<div style="display:flex;justify-content:space-between;gap:15px">
+<div style="flex:1">
+<strong style="font-size:1.1rem;display:block;margin-bottom:8px">${desc}</strong>
+<div>
+<span class="badge badge-${type==='مصروف'?'no':'warn'}">${type}</span>
+<span class="badge badge-ok">${cat}</span>
+<span class="badge badge-ok"><i class="fas fa-calendar"></i> ${date}</span>
+</div>
+</div>
+<strong style="font-size:1.5rem;color:${type==='مصروف'?'var(--no)':'var(--warn)'}">${fmt(amt)}</strong>
+</div>
+${img?`<div class="preview"><img src="${img}" onclick="window.open(this.src,'_blank')"></div>`:''}
+<div style="display:flex;gap:10px;margin-top:15px">
+<button class="btn btn-info btn-sm" onclick="edit('${id}','${date}',${amt},'${desc}','${type}','${cat}')"><i class="fas fa-edit"></i>تعديل</button>
+<button class="btn btn-danger btn-sm" onclick="delOpById('${id}')"><i class="fas fa-trash"></i>حذف</button>
+</div>
+</div>
+`;
+}
+cont.innerHTML=html||'<div class="empty"><i class="fas fa-search"></i><h3>لا نتائج</h3></div>';
+}
+
+function edit(id,date,amt,desc,type,cat){
+document.getElementById('e-id').value=id;
+document.getElementById('e-date').value=date;
+document.getElementById('e-amt').value=amt;
+document.getElementById('e-desc').value=desc;
+document.getElementById('e-type').value=type;
+document.getElementById('e-cat').value=cat;
+openM('edit-modal');
+}
+
+async function saveEdit(){
+const id=document.getElementById('e-id').value;
+const date=document.getElementById('e-date').value;
+const amt=parseFloat(document.getElementById('e-amt').value);
+const desc=document.getElementById('e-desc').value;
+const type=document.getElementById('e-type').value;
+const cat=document.getElementById('e-cat').value;
+
+if(!amt||!desc){alert('املأ الحقول');return;}
+
+showL('جاري التحديث...');
+try{
+await fetch(URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'updateOperation',id:id,date:date,amount:amt,description:desc,type:type,category:cat})});
+hideL();
+closeM('edit-modal');
+alert('تم التعديل');
+setTimeout(()=>{load();loadAllOps();},1000);
+}catch(e){
+hideL();
+alert('خطأ');
+}
+}
+
+async function delOpById(id){
+if(!confirm('حذف؟'))return;
+showL('جاري الحذف...');
+try{
+await fetch(URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'deleteOperation',id:id})});
+hideL();
+alert('تم الحذف');
+setTimeout(()=>{load();loadAllOps();},1000);
+}catch(e){
+hideL();
+alert('خطأ');
+}
+}
+
+function loadDebts(){
+const cont=document.getElementById('debts');
+if(!data.debts||data.debts.length<=1){
+cont.innerHTML='<div class="empty"><i class="fas fa-hand-holding-dollar"></i><h3>لا ديون</h3></div>';
+document.getElementById('d-total').textContent='0';
+document.getElementById('d-remain').textContent='0';
+return;
+}
+
+let html='';
+let total=0,remain=0;
+
+for(let i=data.debts.length-1;i>=1;i--){
+const d=data.debts[i];
+const id=d[0],date=d[1],amt=parseFloat(d[2]),desc=d[3],cred=d[4],img=d[5],pamt=parseFloat(d[6])||0,pdate=d[7];
+
+total+=amt;
+const rem=amt-pamt;
+if(rem>0)remain+=rem;
+const isPaid=pamt>=amt;
+
+html+=`
+<div class="card" style="border-right:5px solid ${isPaid?'var(--ok)':'var(--warn)'}">
+<div style="display:flex;justify-content:space-between;margin-bottom:15px">
+<div style="flex:1">
+<strong style="font-size:1.1rem;display:block;margin-bottom:8px">${desc}</strong>
+${cred?`<div style="font-size:.85rem;color:#64748b">الدائن: ${cred}</div>`:''}
+<span class="badge badge-ok"><i class="fas fa-calendar"></i> ${date}</span>
+</div>
+<div style="text-align:right">
+<div style="font-size:1.5rem;font-weight:900;color:var(--warn)">${fmt(amt)}</div>
+<span class="badge badge-${isPaid?'ok':'warn'}">${isPaid?'✓ مدفوع':'غير مدفوع'}</span>
+</div>
+</div>
+${pamt>0?`
+<div style="background:var(--light);padding:10px;border-radius:10px;margin-bottom:10px">
+<div style="display:flex;justify-content:space-between">
+<span>المدفوع: <strong>${fmt(pamt)}</strong></span>
+<span>المتبقي: <strong style="color:${rem>0?'var(--no)':'var(--ok)'}">${fmt(rem)}</strong></span>
+</div>
+${pdate?`<div style="font-size:.75rem;color:#64748b;margin-top:5px">تاريخ السداد: ${pdate}</div>`:''}
+</div>
+`:''}
+${img?`<div class="preview"><img src="${img}" onclick="window.open(this.src,'_blank')"></div>`:''}
+<div style="display:flex;gap:10px;margin-top:10px">
+${!isPaid?`<button class="btn btn-success btn-sm" onclick="openPay('${id}',${amt},${pamt})"><i class="fas fa-money-bill"></i>سداد</button>`:''}
+<button class="btn btn-danger btn-sm" onclick="delDebt('${id}')"><i class="fas fa-trash"></i>حذف</button>
+</div>
+</div>
+`;
+}
+
+cont.innerHTML=html;
+document.getElementById('d-total').textContent=fmt(total);
+document.getElementById('d-remain').textContent=fmt(remain);
+}
+
+function openPay(id,total,paid){
+document.getElementById('p-id').value=id;
+document.getElementById('p-amt').value='';
+document.getElementById('p-amt').placeholder=`المتبقي: ${fmt(total-paid)}`;
+openM('pay-modal');
+}
+
+async function payDebt(){
+const id=document.getElementById('p-id').value;
+const amt=parseFloat(document.getElementById('p-amt').value);
+
+if(!amt||amt<=0){alert('أدخل المبلغ');return;}
+
+showL('جاري التسجيل...');
+try{
+await fetch(URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'payDebt',id:id,paidAmount:amt,paidDate:new Date().toISOString().split('T')[0]})});
+hideL();
+closeM('pay-modal');
+alert('تم السداد');
+setTimeout(()=>{load();loadDebts();},1000);
+}catch(e){
+hideL();
+alert('خطأ');
+}
+}
+
+async function delDebt(id){
+if(!confirm('حذف؟'))return;
+showL('جاري الحذف...');
+try{
+await fetch(URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'deleteDebt',id:id})});
+hideL();
+alert('تم الحذف');
+setTimeout(()=>{load();loadDebts();},1000);
+}catch(e){
+hideL();
+alert('خطأ');
+}
+}
+
+function openM(id){
+document.getElementById(id).classList.add('show');
+}
+
+function closeM(id){
+document.getElementById(id).classList.remove('show');
+}
+
+function showL(msg){
+const l=document.createElement('div');
+l.id='loading';
+l.className='loading';
+l.innerHTML=`<div class="loader"></div><div style="font-size:1.1rem;font-weight:600">${msg}</div>`;
+document.body.appendChild(l);
+}
+
+function hideL(){
+const l=document.getElementById('loading');
+if(l)l.remove();
+}
+
+function fmt(n){
+return parseFloat(n).toFixed(2);
+}
+</script>
+
+</body>
+</html>
